@@ -25,11 +25,24 @@ class ArticleResource extends Resource
             ->schema([
                 Forms\Components\Select::make('user_id')
                     ->relationship('user', 'name')
+                    ->label('Penulis')
                     ->required(),
+
                 Forms\Components\TextInput::make('title')
+                    ->label('Judul Artikel')
                     ->required(),
+
                 Forms\Components\Textarea::make('content')
+                    ->label('Isi Artikel')
                     ->required(),
+
+                Forms\Components\FileUpload::make('image') // Gunakan nama kolom yang sesuai di DB
+                    ->label('Foto Artikel')
+                    ->image()
+                    ->directory('uploads/articles') // Simpan ke storage/app/public/uploads/articles
+                    ->imagePreviewHeight('150')
+                    ->maxSize(2048) // 2MB
+                    ->nullable(),
             ]);
     }
 
@@ -37,13 +50,27 @@ class ArticleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('user.name'),
-                Tables\Columns\TextColumn::make('title'),
-                Tables\Columns\TextColumn::make('content')->limit(50),
-                Tables\Columns\TextColumn::make('created_at'),
-            ])
-            ->filters([
-                //
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Penulis')
+                    ->searchable(),
+
+                Tables\Columns\TextColumn::make('title')
+                    ->label('Judul')
+                    ->searchable(),
+                    
+                Tables\Columns\TextColumn::make('content')
+                    ->label('Konten')
+                    ->limit(50),
+
+                Tables\Columns\ImageColumn::make('image')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->height(50)
+                    ->width(50),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

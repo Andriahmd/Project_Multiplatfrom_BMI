@@ -16,9 +16,11 @@ return new class extends Migration
             $table->string('name')->nullable(); // name: string, nullable
             $table->string('email')->unique(); // email: string, unique
             $table->string('password'); // password: string
+             $table->string('foto')->nullable();
             $table->enum('role', ['admin', 'user'])->default('user'); // role: enum
             $table->rememberToken(); // untuk auth remember_me
             $table->timestamps(); // created_at & updated_at
+            
         });
     }
 

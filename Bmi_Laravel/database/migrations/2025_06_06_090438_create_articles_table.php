@@ -4,15 +4,19 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddColumnsToArticles extends Migration
+return new class extends Migration
 {
     public function up()
     {
-        Schema::table('articles', function (Blueprint $table) {
-            $table->unsignedBigInteger('user_id')->nullable()->after('id');
+        Schema::create('articles', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('user_id')->nullable();
             $table->string('title');
             $table->text('content');
-            $table->foreign('user_id')->references(columns: 'id')->on('users')->onDelete('set null');
+            $table->string('image')->nullable(); // Tambahan: kolom untuk menyimpan foto
+            
+            $table->timestamps(); 
+            
         });
     }
 
@@ -23,4 +27,4 @@ class AddColumnsToArticles extends Migration
             $table->dropColumn(['user_id', 'title', 'content']);
         });
     }
-}
+};

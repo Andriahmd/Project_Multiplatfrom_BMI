@@ -13,7 +13,7 @@ class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens, HasFactory, Notifiable; 
 
-    protected $fillable = ['name', 'email', 'password', 'role']; 
+    protected $fillable = ['name', 'email', 'password', 'role', 'foto'];
     protected $hidden = ['password', 'remember_token']; 
     protected $casts = [
         'email_verified_at' => 'datetime', 
@@ -24,10 +24,7 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(BmiRecord::class);
     }
 
-    public function profile()
-    {
-        return $this->hasOne(UserProfile::class);
-    }
+   
 
     public function canAccessPanel(\Filament\Panel $panel): bool
     {
@@ -39,13 +36,10 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Article::class);
     }
 
-    public function userProfiles()
-    {
-        return $this->hasOne(UserProfile::class);
-    }
-
-    public function recommendations()
-    {
-        return $this->hasMany(Recommendation::class);
-    }
+    
+public function recommendations()
+{
+    return $this->hasManyThrough(Recommendation::class, BmiRecord::class);
+}
+    
 }
