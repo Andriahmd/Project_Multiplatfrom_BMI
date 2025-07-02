@@ -15,6 +15,8 @@ class ArticleController extends Controller
         return view('admin.articles.index', compact('articles'));
     }
 
+
+
     public function create()
     {
         return view('admin.articles.create');

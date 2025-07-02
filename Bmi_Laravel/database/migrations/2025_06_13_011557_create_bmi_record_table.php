@@ -13,11 +13,13 @@ return new class extends Migration {
         Schema::create('bmi_records', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id')->nullable();
-            $table->decimal('height' )->nullable();
-            $table->decimal('weight')->nullable();
-            $table->decimal('bmi')->nullable();
-            $table->enum('gender', ['L', 'P'])->nullable();
-            $table->string('category')->nullable();
+            $table->decimal('height', 8, 2);
+            $table->decimal('weight', 8, 2); 
+            $table->integer('age'); // Ubah menjadi not nullable jika usia selalu ada
+            $table->string('gender'); // Ubah menjadi string
+            $table->decimal('bmi', 8, 2); // Lebih baik spesifikkan precision dan scale
+            $table->decimal('bmr', 8, 2); // Tambahkan kolom BMR
+            $table->string('category');
             $table->timestamp('recorded_at')->nullable(); 
 
             $table->timestamps();
@@ -31,6 +33,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('bmi_record');
+        Schema::dropIfExists('bmi_records'); // Perbaiki typo
     }
 };

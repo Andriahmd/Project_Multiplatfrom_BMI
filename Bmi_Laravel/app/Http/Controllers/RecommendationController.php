@@ -6,21 +6,31 @@ use App\Models\Recommendation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-
+use App\Http\Resources\RecommendationResource;
 class RecommendationController extends Controller
 {
-    // GET: /api/recommendations
-    public function index()
-    {
-        $user = Auth::user();
 
-        $recommendations = Recommendation::where('user_id', $user->id)->get();
+// GET: /api/recommendations
+public function index()
+{
+    $recommendations = Recommendation::all();
 
-        return response()->json([
-            'success' => true,
-            'data' => $recommendations,
-        ]);
-    }
+    return response()->json([
+        'success' => true,
+        'data' => $recommendations->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'user_id' => $item->user_id,
+                'user_name' => $item->user?->name,
+                'recommendation_text' => $item->recommendation_text,
+                'image_url' => $item->image ? asset('storage/' . $item->image) : null,
+                'type' => $item->type,
+                'description' => $item->description,
+                'created_at' => $item->created_at->toDateTimeString(),
+            ];
+        }),
+    ]);
+}
 
     // POST: /api/recommendations
     public function store(Request $request)
@@ -68,7 +78,7 @@ class RecommendationController extends Controller
         if (!$recommendation) {
             return response()->json([
                 'success' => false,
-                'message' => 'Data tidak ditemukan',
+                'message' => 'Rekomendasi tidak ditemukan',
             ], 404);
         }
 

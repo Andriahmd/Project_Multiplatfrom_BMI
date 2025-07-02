@@ -4,32 +4,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class BmiRecord extends Model
 {
-    protected $table = 'bmi_records';
-    protected $fillable = ['user_id', 'height', 'weight', 'bmi', 'category', 'recorded_at'];
+      protected $table = 'bmi_records';
+    protected $fillable = ['user_id', 'height', 'weight', 'bmi', 'category', 'recorded_at', 'age', 'gender', 'bmr']; // Tambahkan age, gender, bmr
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function setBmiAttribute($value)
-    {
-        if ($this->height && $this->weight) {
-            $this->attributes['bmi'] = $this->weight / ($this->height * $this->height);
-        } else {
-            $this->attributes['bmi'] = $value;
-        }
-    }
-
-    // public function getBmiCategoryAttribute()
+    // Hapus atau modifikasi mutator setBmiAttribute jika Anda ingin perhitungan hanya di controller
+    // public function setBmiAttribute($value)
     // {
-    //     if ($this->bmi < 18.5)
-    //         return 'Kurus';
-    //     if ($this->bmi <= 24.9)
-    //         return 'Ideal';
-    //     if ($this->bmi > 30)
-    //         return 'Obesitas';
-    //     return 'Overweight';
+    //     if ($this->height && $this->weight) {
+    //         $this->attributes['bmi'] = $this->weight / ($this->height * $this->height);
+    //     } else {
+    //         $this->attributes['bmi'] = $value;
+    //     }
     // }
 
     public function recommendations()
