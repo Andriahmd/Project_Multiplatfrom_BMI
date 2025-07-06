@@ -63,12 +63,11 @@ public function updateUser(Request $request)
     Log::info('Request method: ', ['method' => $request->method()]);
     Log::info('Request headers: ', $request->header());
 
-    // Validasi request
     $validator = Validator::make($request->all(), [
         'name' => 'nullable|string|max:255',
         'email' => 'nullable|email|unique:users,email,' . $user->id,
         'password' => 'nullable|string|min:8',
-        'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        'foto' => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
     ]);
 
     if ($validator->fails()) {
@@ -82,37 +81,33 @@ public function updateUser(Request $request)
 
     $hasChanges = false;
 
-    // Proses upload file jika ada
     if ($request->hasFile('foto')) {
         try {
             $foto = $request->file('foto');
             $fotoName = time() . '_' . uniqid() . '.' . $foto->getClientOriginalExtension();
             $fotoPath = $foto->storeAs('foto', $fotoName, 'public');
 
-            // Hapus foto lama jika ada
-            if ($user->foto) {
-                $oldPath = storage_path('app/public/' . $user->foto);
-                if (file_exists($oldPath)) {
-                    unlink($oldPath);
-                    Log::info('Old photo deleted: ' . $oldPath);
+            if ($fotoPath) {
+                if ($user->foto) {
+                    $oldPath = storage_path('public/foto' . $user->foto);
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                        Log::info('Old photo deleted: ' . $oldPath);
+                    }
                 }
+                $user->foto = $fotoPath;
+                $hasChanges = true;
+                Log::info('New photo uploaded to: ' . $fotoPath);
+            } else {
+                Log::error('Failed to store file, no path returned');
+                return response()->json(['success' => false, 'message' => 'Gagal menyimpan foto'], 500);
             }
-
-            $user->foto = $fotoPath;
-            $hasChanges = true;
-
-            Log::info('New photo uploaded to: ' . $fotoPath);
         } catch (\Exception $e) {
             Log::error('Upload foto error: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal menyimpan foto',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => 'Gagal menyimpan foto', 'error' => $e->getMessage()], 500);
         }
     }
 
-    // Update data lainnya
     if ($request->filled('name') && $user->name !== $request->name) {
         $user->name = $request->name;
         $hasChanges = true;
@@ -133,29 +128,16 @@ public function updateUser(Request $request)
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diperbarui.',
-            'data' => [
-                'id' => $user->id,
-                'name' => $user->name,
-                'email' => $user->email,
-                'foto' => $user->foto ? asset('storage/' . $user->foto) : null,
-                'updated_at' => $user->updated_at,
-            ]
-        ], 200);
+            'data' => $user->toArray() // Mengembalikan semua field user
+        ], 201);
     }
 
     return response()->json([
         'success' => true,
         'message' => 'Tidak ada perubahan yang dilakukan.',
-        'data' => [
-            'id' => $user->id,
-            'name' => $user->name,
-            'email' => $user->email,
-            'foto' => $user->foto ? asset('storage/' . $user->foto) : null,
-            'updated_at' => $user->updated_at,
-        ]
+        'data' => $user->toArray()
     ], 200);
 }
-
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();

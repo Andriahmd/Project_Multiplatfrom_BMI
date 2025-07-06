@@ -41,5 +41,16 @@ public function recommendations()
 {
     return $this->hasManyThrough(Recommendation::class, BmiRecord::class);
 }
+
+public function toArray()
+{
+    return [
+        'id' => $this->id,
+        'name' => $this->name,
+        'email' => $this->email,
+        'foto' => $this->foto,
+        'updated_at' => $this->updated_at,
+    ];
+}
     
 }

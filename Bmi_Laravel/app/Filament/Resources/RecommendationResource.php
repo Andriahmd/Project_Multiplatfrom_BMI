@@ -43,9 +43,10 @@ class RecommendationResource extends Resource
                 Forms\Components\Select::make('type')
                     ->label('Jenis Rekomendasi')
                     ->options([
-                        'diet' => 'Rekomendasi Diet',
-                        'bulking' => 'Rekomendasi Bulking',
-                        'umum' => 'Rekomendasi Umum',
+                        'Diet' => 'Rekomendasi Diet',
+                        'Bulking' => 'Rekomendasi Bulking',
+                        'Umum' => 'Rekomendasi Umum',
+                        'Olahraga' => 'Rekomendasi Olahraga',
                     ])
                     ->required(),
 

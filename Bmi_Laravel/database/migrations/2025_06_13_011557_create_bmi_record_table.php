@@ -17,8 +17,10 @@ return new class extends Migration {
             $table->decimal('weight', 8, 2); 
             $table->integer('age'); // Ubah menjadi not nullable jika usia selalu ada
             $table->string('gender'); // Ubah menjadi string
+            $table->string('activity_level');
             $table->decimal('bmi', 8, 2); // Lebih baik spesifikkan precision dan scale
             $table->decimal('bmr', 8, 2); // Tambahkan kolom BMR
+            $table->decimal('tdee', 8, 2)->nullable();
             $table->string('category');
             $table->timestamp('recorded_at')->nullable(); 
 
