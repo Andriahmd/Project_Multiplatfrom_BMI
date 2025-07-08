@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BmiRecordController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\InfogiziController;
 use App\Models\BmiRecord;
 
 Route::get('/user', function (Request $request) {
@@ -36,4 +38,16 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/recommendations', [RecommendationController::class, 'index']);
     Route::get('/recommendations/{id}', [RecommendationController::class, 'show']);
+});
+
+// Route untuk melihat Info gizi 
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/infogizi', [InfogiziController::class, 'index']);
+    Route::get('/infogizi/{id}', [InfogiziController::class, 'show']);
+});
+
+// --- Route untuk Notifikasi Baru ---
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index']);
+    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']); // Untuk menandai sudah dibaca
 });
