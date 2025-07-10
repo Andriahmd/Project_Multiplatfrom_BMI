@@ -10,21 +10,24 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\InfogiziController;
 use App\Models\BmiRecord;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
-
-Route::put('/user/update', [AuthController::class, 'updateUser'])->middleware('auth:sanctum');
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login'])->name('login');
-Route::middleware('auth:sanctum')->post('/logout', [AuthController::class, 'logout']);
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user()->toArray(); 
+    });
+    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::post('/user/profile', [AuthController::class, 'updateProfile']); 
+    Route::put('/user/password', [AuthController::class, 'changePassword']); 
+
+
 
 // Endpoint untuk hitung BMI dan BMR
 Route::post('/bmi', [BmiRecordController::class, 'store'])->middleware('auth:sanctum');
 Route::get('/bmi', [BmiRecordController::class, 'indexx'])->middleware('auth:sanctum'); // Tambahkan middleware
 Route::get('/bmi/{id}', [BmiRecordController::class, 'show'])->middleware('auth:sanctum'); // Tambahkan middleware
-
+Route::delete('/bmi/{id}', [BmiRecordController::class, 'destroy'])->middleware('auth:sanctum');
 // Route::post('/bmiii', [BmiRecordController::class, 'store'])->middleware('auth:sanctum');
 
 // Route untuk melihat article 
@@ -46,8 +49,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/infogizi/{id}', [InfogiziController::class, 'show']);
 });
 
-// --- Route untuk Notifikasi Baru ---
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/notifications', [NotificationController::class, 'index']);
-    Route::patch('/notifications/{id}/read', [NotificationController::class, 'markAsRead']); // Untuk menandai sudah dibaca
+// Rute Notifikasi (BARU)
+Route::get('notifications', [NotificationController::class, 'index']);
+Route::get('notifications/unread-count', [NotificationController::class, 'unreadCount']);
+Route::post('notifications/{id}/mark-as-read', [NotificationController::class, 'markAsRead']);
+Route::delete('notifications/{id}', [NotificationController::class, 'destroy']); 
+
 });

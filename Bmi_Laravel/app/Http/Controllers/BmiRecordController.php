@@ -87,6 +87,30 @@ class BmiRecordController extends Controller
         return view('bmi_records.index', compact('records'));
     }
 
+     public function destroy($id)
+    {
+        $record = BmiRecord::find($id);
+
+        // Cek apakah record ditemukan
+        if (!$record) {
+            return response()->json(['message' => 'BMI record not found.'], 404);
+        }
+
+        // Otorisasi: Pastikan pengguna yang terautentikasi adalah pemilik record ini
+        if (Auth::check() && $record->user_id !== Auth::id()) {
+            return response()->json(['message' => 'Unauthorized to delete this BMI record.'], 403);
+        }
+
+        try {
+            // Hapus record
+            $record->delete();
+            return response()->json(['message' => 'BMI record deleted successfully.'], 200); // Atau 204 No Content
+        } catch (\Exception $e) {
+            // Tangani error jika terjadi masalah saat menghapus
+            return response()->json(['message' => 'Failed to delete BMI record.', 'error' => $e->getMessage()], 500);
+        }
+    }
+    
     public function show($id)
     {
         $record = BmiRecord::with('user', 'recommendations')->findOrFail($id);
